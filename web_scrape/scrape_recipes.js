@@ -1,8 +1,11 @@
 const puppeteer = require('puppeteer');
 
+
 (async () => {
+
+
     const browser = await puppeteer.launch({
-        headless: false
+        headless: true
     });
     const page = await browser.newPage();
     await page.setViewport({
@@ -13,12 +16,34 @@ const puppeteer = require('puppeteer');
         waitUntil: 'domcontentloaded'
     });
     await page.waitFor(4000);
-    await page.evaluate(() => {
-        let table = document.querySelectorAll('table.listview-mode-default tbody tr');
-        const rowArray = Array.from(table);
-        console.log(rowArray);
-        return rowArray
+    const data = await page.evaluate(() => {
+        let recipesArray = [];
+        let nextButton = document.querySelector("#lv-items > div.listview-band-bottom > div.listview-nav > a:nth-child(4)");
+
+
+
+        function getRecipeLink(array) {
+            let table = Array.from(document.querySelectorAll('table.listview-mode-default tbody tr td div.iconmedium a'));
+            array.push(table.map(link => {
+                return link.getAttribute("href");
+            }))
+        }
+        //getRecipeLink(recipesArray);
+
+        if (window.getComputedStyle(nextButton).display === "none") {
+            getRecipeLink(recipesArray);
+            return recipesArray;
+        } else {
+            getRecipeLink(recipesArray);
+            await page.click(nextButton);
+
+        }
+
+
+
+
     });
+    console.log(data)
 
 
     await browser.close();
