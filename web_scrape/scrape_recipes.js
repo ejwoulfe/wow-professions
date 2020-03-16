@@ -18,7 +18,7 @@ const puppeteer = require('puppeteer');
     });
     await page.waitFor(4000);
 
-    const getRecipes = await page.evaluate(() => {
+    const getRecipeLinks = await page.evaluate(() => {
         // Array to hold the links to all the recipes where we will get the information.
         let recipeLinksArray = [];
         // Next button variable that we will need to click if it exist so we don't miss recipes.
@@ -28,6 +28,7 @@ const puppeteer = require('puppeteer');
         function fillArray(array) {
             let table = Array.from(document.querySelectorAll('table.listview-mode-default tbody tr td div.iconmedium a'));
             array.push(table.map(link =>
+                "https://www.wowhead.com" +
                 link.getAttribute("href")
             ));
         }
@@ -45,34 +46,19 @@ const puppeteer = require('puppeteer');
     })
 
     // Variable that holds all of the recipe links for that profession.
-    let recipesLinkList = [].concat.apply([], getRecipes);
+    let recipesLinkList = [].concat.apply([], getRecipeLinks);
+    console.log(recipesLinkList)
 
 
     //let url = 'https://www.wowhead.com' + merged[0];
 
+    // Iterate through all of the recipe links to retrieve the recipe data.
     // for (let link in recipesList) {
     //     console.log(`${recipesList[link]}`);
     // }
 
 
     await page.waitFor(2000);
-    let page2 = await browser.newPage();
-    await page2.goto('https://www.wowhead.com/item=170208/recipe-potion-of-unbridled-fury', {
-        waitUntil: 'load'
-    });
-
-    await page2.waitFor(2000);
-    const teachesPage = await page2.evaluate(() => {
-        let teachesButton = document.querySelector('#jkbfksdbl4 > div > ul > li:nth-child(3) > a');
-        teachesButton.click();
-        let iconImage = document.querySelector('#tab-teaches-recipe > div.listview-scroller > table > tbody > tr > td:nth-child(2) > div > ins').getAttribute("style");
-        return iconImage;
-    });
-    let iconLink = teachesPage.replace('background-image: url("', '').replace(/"/g, '').replace(');', '').replace('medium', 'large');
-    console.log(iconLink)
-
-    page2.close()
-
 
 
     await browser.close();
