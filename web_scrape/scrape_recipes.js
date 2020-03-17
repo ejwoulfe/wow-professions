@@ -13,7 +13,7 @@ const puppeteer = require('puppeteer');
         width: 1200,
         height: 1800
     })
-    await page.goto('https://www.wowhead.com/alchemy-recipe-items?filter=166;8;0#0+18', {
+    await page.goto('https://www.wowhead.com/alchemy-recipe-items?filter=166;8;0', {
         waitUntil: 'domcontentloaded'
     });
     await page.waitFor(4000);
@@ -26,11 +26,22 @@ const puppeteer = require('puppeteer');
 
         // Function that will find the table of recipes and will fill the passed in array with the links.
         function fillArray(array) {
-            let table = Array.from(document.querySelectorAll('table.listview-mode-default tbody tr td div.iconmedium a'));
-            array.push(table.map(link =>
-                "https://www.wowhead.com" +
-                link.getAttribute("href")
-            ));
+            let table = Array.from(document.querySelectorAll('table.listview-mode-default tbody tr'));
+
+
+            array.push(table.map(row => {
+
+                if (row.innerHTML.match("<span class=\"q2\">")) {
+                    if (!row.innerHTML.match("Rank 2")) {
+                        return row.innerHTML;
+                        //"https://www.wowhead.com" +  row.getAttribute("href")
+                    }
+                } else if (row.innerHTML.match("<span class=\"q2\">") == null) {
+                    return row.innerHTML;
+                }
+
+
+            }));
         }
         // while the table still has a next button, we keep filling it and go to the next section.
         while (window.getComputedStyle(nextButton).display !== "none") {
@@ -46,8 +57,15 @@ const puppeteer = require('puppeteer');
     })
 
     // Variable that holds all of the recipe links for that profession.
+
     let recipesLinkList = [].concat.apply([], getRecipeLinks);
-    console.log(recipesLinkList)
+
+    for (let i = 0; i < 25; i++) {
+        console.log(recipesLinkList[i])
+        console.log("\n")
+    }
+
+
 
 
     //let url = 'https://www.wowhead.com' + merged[0];
