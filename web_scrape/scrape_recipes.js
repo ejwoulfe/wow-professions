@@ -31,12 +31,15 @@ const puppeteer = require('puppeteer');
 
             array.push(table.map(row => {
 
+
                 if (row.innerHTML.match("<span class=\"q2\">")) {
                     if (!row.innerHTML.match("Rank 2")) {
+
                         return row.innerHTML;
-                        //"https://www.wowhead.com" +  row.getAttribute("href")
+
                     }
                 } else if (row.innerHTML.match("<span class=\"q2\">") == null) {
+
                     return row.innerHTML;
                 }
 
@@ -58,10 +61,21 @@ const puppeteer = require('puppeteer');
 
     // Variable that holds all of the recipe links for that profession.
 
-    let recipesLinkList = [].concat.apply([], getRecipeLinks);
+    let recipesLinkList = [].concat.apply([], getRecipeLinks).filter(value => value != null);
 
-    for (let i = 0; i < 25; i++) {
-        console.log(recipesLinkList[i])
+
+
+
+    for (let i = 0; i < recipesLinkList.length; i++) {
+        let startOfLink = (recipesLinkList[i].indexOf("<a href=\"/item="))
+        let endOfLink = (recipesLinkList[i].indexOf("</a>"));
+        let recipeAHref = recipesLinkList[i].substring(startOfLink, endOfLink);
+        let quoteRegex = "\"";
+        let recipeItemLink = recipeAHref.substring(recipeAHref.indexOf(quoteRegex) + 1, recipeAHref.indexOf(quoteRegex, recipeAHref.indexOf(quoteRegex) + 1));
+
+        console.log("https://www.wowhead.com" + recipeItemLink)
+
+
         console.log("\n")
     }
 
