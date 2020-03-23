@@ -62,22 +62,32 @@ const puppeteer = require('puppeteer');
     // Variable that holds all of the recipe links for that profession.
 
     let recipesLinkList = [].concat.apply([], getRecipeLinks).filter(value => value != null);
+    let recipesLinkSet = new Set();
+    let recipesNoDupLinks = [];
 
 
 
 
     for (let i = 0; i < recipesLinkList.length; i++) {
+        let setSize = recipesLinkSet.size;
         let startOfLink = (recipesLinkList[i].indexOf("<a href=\"/item="))
         let endOfLink = (recipesLinkList[i].indexOf("</a>"));
         let recipeAHref = recipesLinkList[i].substring(startOfLink, endOfLink);
         let quoteRegex = "\"";
         let recipeItemLink = recipeAHref.substring(recipeAHref.indexOf(quoteRegex) + 1, recipeAHref.indexOf(quoteRegex, recipeAHref.indexOf(quoteRegex) + 1));
+        recipesLinkSet.add(recipeItemLink.substring(recipeItemLink.lastIndexOf("/")));
+        let newSetLength = recipesLinkSet.size;
+        if (newSetLength > setSize) {
+            recipesNoDupLinks.push("https://www.wowhead.com".concat(recipeItemLink));
+        }
 
-        console.log("https://www.wowhead.com" + recipeItemLink)
 
 
-        console.log("\n")
     }
+    console.log(recipesNoDupLinks);
+    console.log(recipesNoDupLinks.length);
+
+
 
 
 
