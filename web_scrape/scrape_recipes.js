@@ -1,5 +1,5 @@
 const puppeteer = require('puppeteer');
-
+const fs = require('fs');
 
 (async () => {
 
@@ -13,7 +13,7 @@ const puppeteer = require('puppeteer');
         width: 1200,
         height: 1800
     })
-    await page.goto('https://www.wowhead.com/alchemy-recipe-items?filter=166;8;0', {
+    await page.goto('https://www.wowhead.com/tailoring-pattern-items?filter=166;8;0', {
         waitUntil: 'domcontentloaded'
     });
     await page.waitFor(4000);
@@ -60,44 +60,56 @@ const puppeteer = require('puppeteer');
     })
 
     // Variable that holds all of the recipe links for that profession.
-
     let recipesLinkList = [].concat.apply([], getRecipeLinks).filter(value => value != null);
+    // Create a set to get rid of all the duplicates and a new array to hold the final links.
     let recipesLinkSet = new Set();
     let recipesNoDupLinks = [];
 
 
 
+    // function that will remove duplicates
+    function removeDuplicateLinks(linksArray) {
+        // Loop through the array and add unique recipes to the set.
+        for (let i = 0; i < linksArray.length; i++) {
+            // Variable to hold the sets size.
+            let setSize = recipesLinkSet.size;
+            // Variables to pull out the links from the HTML
+            let startOfLink = (linksArray[i].indexOf("<a href=\"/item="))
+            let endOfLink = (linksArray[i].indexOf("</a>"));
+            let recipeAHref = linksArray[i].substring(startOfLink, endOfLink);
+            let quoteRegex = "\"";
+            // Variable that holds the text inbetween the a href link from the html. Used to check if its unique.
+            let recipeItemLink = recipeAHref.substring(recipeAHref.indexOf(quoteRegex) + 1, recipeAHref.indexOf(quoteRegex, recipeAHref.indexOf(quoteRegex) + 1));
+            // Add the recipe's item link to the set, if its a duplicate then we wont add it.
+            recipesLinkSet.add(recipeItemLink.substring(recipeItemLink.lastIndexOf("/")));
+            // Once added we make a variable to hold the sets new size if it changed.
+            let newSetLength = recipesLinkSet.size;
+            // Check if the size of the set changed, if it did it means we have a new unique link and we should add it to the final array.
+            if (newSetLength > setSize) {
+                recipesNoDupLinks.push("https://www.wowhead.com".concat(recipeItemLink));
+            }
 
-    for (let i = 0; i < recipesLinkList.length; i++) {
-        let setSize = recipesLinkSet.size;
-        let startOfLink = (recipesLinkList[i].indexOf("<a href=\"/item="))
-        let endOfLink = (recipesLinkList[i].indexOf("</a>"));
-        let recipeAHref = recipesLinkList[i].substring(startOfLink, endOfLink);
-        let quoteRegex = "\"";
-        let recipeItemLink = recipeAHref.substring(recipeAHref.indexOf(quoteRegex) + 1, recipeAHref.indexOf(quoteRegex, recipeAHref.indexOf(quoteRegex) + 1));
-        recipesLinkSet.add(recipeItemLink.substring(recipeItemLink.lastIndexOf("/")));
-        let newSetLength = recipesLinkSet.size;
-        if (newSetLength > setSize) {
-            recipesNoDupLinks.push("https://www.wowhead.com".concat(recipeItemLink));
+
+
         }
-
-
-
     }
-    console.log(recipesNoDupLinks);
-    console.log(recipesNoDupLinks.length);
+    removeDuplicateLinks(recipesLinkList);
+
+    // Filewrite to write all the links that we can later use to go to those pages and retrieve the recipe data from.
+    let file = fs.createWriteStream('Tailoring_Recipes.txt');
+    file.on('error', function (error) {
+        console.log(error)
+    });
+    recipesNoDupLinks.forEach(value => {
+
+        file.write(value + '\n');
+    });
+    file.end();
 
 
 
 
 
-
-    //let url = 'https://www.wowhead.com' + merged[0];
-
-    // Iterate through all of the recipe links to retrieve the recipe data.
-    // for (let link in recipesList) {
-    //     console.log(`${recipesList[link]}`);
-    // }
 
 
     await page.waitFor(2000);
