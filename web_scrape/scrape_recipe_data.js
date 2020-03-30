@@ -9,7 +9,7 @@ async function scrapeRecipeData(url) {
     let linksArray = fs.readFileSync('./Profession Recipes Lists/Alchemy_Recipes.txt').toString().split("\n");
     // Open browser to recipes list page.
     const browser = await puppeteer.launch({
-        headless: false
+        headless: true
     });
 
     for (let link in linksArray) {
@@ -17,12 +17,13 @@ async function scrapeRecipeData(url) {
         const page = await browser.newPage();
         await page.setViewport({
             width: 1200,
-            height: 1800
+            height: 2800
         })
         await page.goto(linksArray[link], {
             waitUntil: 'domcontentloaded'
         });
         await page.waitFor(2000);
+
         // Click a button which holds all the information we need, then grab that data and store it.
         const getRecipeData = await page.evaluate(() => {
             let teachesButton = document.querySelectorAll('[href="#teaches-recipe"]')[0];
@@ -47,8 +48,19 @@ async function scrapeRecipeData(url) {
             for (let j = 0; j < reagentsWithNoQuantities; j++) {
                 recipeReagentsQuantitiesArray.push("1");
             }
+            let recipeFormat = "";
+            for (let k = 0; k < recipeReagentsQuantitiesArray.length; k++) {
+                if (k == recipeReagentsQuantitiesArray.length - 1) {
+                    recipeFormat += recipeReagentsQuantitiesArray[k] + ", " + recipeReagentsArray[k];
 
-            return recipeImageLink + " " + recipeName + " " + recipeReagentsArray + recipeReagentsQuantitiesArray;
+                } else {
+                    recipeFormat += recipeReagentsQuantitiesArray[k] + ", " + recipeReagentsArray[k] + ", ";
+                }
+            }
+
+
+
+            return recipeFormat;
         });
 
         console.log(getRecipeData)
