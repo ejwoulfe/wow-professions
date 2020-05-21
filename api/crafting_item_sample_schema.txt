@@ -1,0 +1,52 @@
+{
+  "id": 6637,
+  "name": "Silvered Bronze Leggings",
+  "reagents": [
+    {
+      "reagent": {
+        "image": "https://us.api.blizzard.com/data/wow/item/2841?namespace=static-8.3.0_32861-us",
+        "name": "Bronze Bar",
+        "id": 2841
+      },
+      "quantity": 12
+    },
+    {
+      "reagent": {
+        "image": "https://us.api.blizzard.com/data/wow/item/2842?namespace=static-8.3.0_32861-us",
+        "name": "Silver Bar",
+        "id": 2842
+      },
+      "quantity": 4
+    },
+    {
+      "reagent": {
+        "image": "https://us.api.blizzard.com/data/wow/item/2842?namespace=static-8.3.0_32861-us",
+        "name": "Coarse Grinding Stone",
+        "id": 3478
+      },
+      "quantity": 2
+    }
+  ],
+  "optional_reagents": [
+    {
+      "reagent": {
+        "image": "https://us.api.blizzard.com/data/wow/item/2841?namespace=static-8.3.0_32861-us",
+        "name": "Bronze Bar",
+        "id": 2841
+      },
+      "quantity": 1
+    },
+    {
+      "reagent": {
+        "image": "https://us.api.blizzard.com/data/wow/item/2842?namespace=static-8.3.0_32861-us",
+        "name": "Silver Bar",
+        "id": 2842
+      },
+      "quantity": 1
+    }
+  ],
+  "crafted_quantity": {
+    "minimum": 1,
+    "maximum": 1
+  }
+}
